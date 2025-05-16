@@ -1,5 +1,5 @@
 {
-  "name": "appsync",
+  "name": "appsync-event-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,10 +8,12 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "devDependencies": {
-    "vite": "^6.3.5"
-  },
   "dependencies": {
+    "vue": "^3.5.13",
     "aws-amplify": "^6.8.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "vite": "^6.3.5"
   }
 }
