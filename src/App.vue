@@ -1,51 +1,64 @@
 <template>
-  <!-- Registration/Login Screen -->
-  <div v-if="!isAuthenticated" class="login-container">
-    <div class="login-box">
-      <h2>Welcome to AppSync Chat</h2>
-      <input
-        v-model="userName"
-        placeholder="Enter your name"
-        @keyup.enter="handleLogin"
-      />
-      <button @click="handleLogin" class="login-button">Join Chat</button>
-    </div>
+<!-- Registration/Login Screen -->
+<div v-if="!isAuthenticated" class="login-container">
+  <div class="login-box">
+    <h2>Welcome to InsTAMt Chat</h2>
+    <input
+      v-model="userName"
+      placeholder="Enter your name"
+      @keyup.enter="handleLogin"
+    />
+    <button @click="handleLogin" class="login-button">Join Chat</button>
   </div>
+</div>
 
-  <!-- Chat Screen -->
-  <div v-else class="chat-container">
-    <div class="chat-header">
-      <h1>AppSync Chat</h1>
-      <div class="user-info">Welcome, {{ userName }}</div>
-    </div>
+<!-- Chat Screen -->
+<div v-else class="app-container">
+  <div class="chat-container">
+    <div class="main-content">
+      <div class="chat-header">
+        <h1>InsTAMt</h1>
+        <div class="user-info">Welcome, {{ userName }}</div>
+      </div>
 
-    <div class="chat-messages" ref="messageContainer">
-      <div v-for="(message, index) in messages"
-           :key="index"
-           :class="['message', message.sender === userName ? 'message-mine' : 'message-other']">
-        <div class="message-sender">{{ message.sender }}</div>
-        <div class="message-content">{{ message.text }}</div>
-        <span class="message-time">{{ message.time }}</span>
+      <div class="chat-messages" ref="messageContainer">
+        <div v-for="(message, index) in messages"
+          :key="index"
+          :class="['message', message.sender === userName ? 'message-mine' : 'message-other']">
+          <div class="message-sender">{{ message.sender }}</div>
+          <div class="message-content">{{ message.text }}</div>
+          <span class="message-time">{{ message.time }}</span>
+        </div>
+      </div>
+
+      <div class="chat-input">
+        <input
+          type="text"
+          v-model="message"
+          placeholder="Type a message..."
+          @keyup.enter="publishEvent"
+        />
+        <button @click="publishEvent" class="send-button">
+          <span>Send</span>
+        </button>
       </div>
     </div>
 
-    <div class="chat-input">
-      <input
-        type="text"
-        v-model="message"
-        placeholder="Type a message..."
-        @keyup.enter="publishEvent"
+    <div class="side-panel">
+      <qrcode-vue
+        :value="currentPageUrl"
+        :size="200"
+        level="H"
       />
-      <button @click="publishEvent" class="send-button">
-        <span>Send</span>
-      </button>
     </div>
   </div>
+</div>
 </template>
 
 <script>
 import { ref, onMounted, watch } from 'vue'
 import { events } from 'aws-amplify/data'
+import QrcodeVue from 'qrcode.vue'
 
 export default {
   setup() {
@@ -54,6 +67,7 @@ export default {
     const messageContainer = ref(null)
     const isAuthenticated = ref(false)
     const userName = ref('')
+    const currentPageUrl = ref(window.location.href)
     let channel = null
 
     const handleLogin = async () => {
@@ -99,23 +113,101 @@ export default {
       messageContainer,
       isAuthenticated,
       userName,
-      handleLogin
+      handleLogin,
+      currentPageUrl
     }
+  },
+  components: {
+    QrcodeVue
   }
 }
 </script>
 
-
 <style scoped>
-/* Main container styles */
-.chat-container {
+.app-container {
+  width: 100%;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
   background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
   padding: 1rem;
+}
+
+.chat-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: row;
   gap: 1rem;
 }
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.side-panel {
+  width: 250px;
+  align-self: flex-start;
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 1rem;
+}
+
+/* Login styles */
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #333; /* or any dark color you prefer */
+}
+
+.login-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.login-box h2 {
+  margin-bottom: 1.5rem;
+  color: #128C7E;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0 1rem;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #333;
+  color: white;
+}
+
+.login-button {
+  width: 100%;
+  background-color: #128C7E;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
 
 /* Header styles */
 .chat-header {
@@ -136,6 +228,8 @@ export default {
 /* Messages container */
 .chat-messages {
   flex: 1;
+  min-height: 400px;
+  max-height: calc(100vh - 200px);
   overflow-y: auto;
   padding: 1rem;
   background: white;
@@ -149,25 +243,25 @@ export default {
   max-width: 70%;
   padding: 0.8rem;
   border-radius: 12px;
-  color: #000000; /* Adding black color for message text */
+  color: #000000;
 }
 
 .message-mine {
   margin-left: auto;
   background-color: #DCF8C6;
-  color: #000000; /* Ensuring sent messages are black */
+  color: #000000;
 }
 
 .message-other {
   margin-right: auto;
   background-color: white;
   border: 1px solid #E2E8F0;
-  color: #000000; /* Ensuring received messages are black */
+  color: #000000;
 }
 
 .message-content {
-  color: #000000; /* Making message content explicitly black */
-  font-size: 1rem; /* Adding a good size for readability */
+  color: #000000;
+  font-size: 1rem;
 }
 
 .message-sender {
@@ -240,4 +334,5 @@ export default {
 .chat-messages::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
 </style>
