@@ -11,7 +11,7 @@ Amplify.configure({
       "endpoint": "https://ws2ll764grdmbmlqpxzsnkvvfa.appsync-api.us-east-1.amazonaws.com/event",
       "region": "us-east-1",
       "defaultAuthMode": "apiKey",
-      "apiKey": "da2-ovdidjfcd5e7xmqsnnimapmgce"
+      "apiKey": "da2-ykwpfbzox5dkxkfjybrivo4eoq"
     }
   }
 })
